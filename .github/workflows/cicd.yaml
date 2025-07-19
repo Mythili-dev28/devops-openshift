@@ -1,4 +1,4 @@
-name: CI/CD Pipeline for Python Web Server
+name: devops-openshift
 
 on:
   push:
