@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devops-openshift
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: devops-openshift
+  template:
+    metadata:
+      labels:
+        app: devops-openshift
+    spec:
+      containers:
+      - name: python-web-server
+        image: mythili-dev28/devops-openshift:v1
+        ports:
+        - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: devops-openshift-service
+spec:
+  selector:
+    app: devops-openshift
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+  type: LoadBalancer

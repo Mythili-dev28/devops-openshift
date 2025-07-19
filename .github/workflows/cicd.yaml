@@ -1,0 +1,35 @@
+name: CI/CD Pipeline for Python Web Server
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Log in to DockerHub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+    - name: Build Docker image
+      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/devops-openshift:v1 .
+
+    - name: Push Docker image
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/devops-openshift:v1
+
+    - name: Install OpenShift CLI
+      run: |
+        curl -L https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/linux/oc.tar.gz | tar -xz
+        sudo mv oc /usr/local/bin/
+
+    - name: Log in to OpenShift
+      run: oc login ${{ secrets.OPENSHIFT_API_URL }} --token=${{ secrets.OPENSHIFT_TOKEN }}
+
+    - name: Deploy to OpenShift
+      run: |
+        oc apply -f deployment.yaml
+        oc rollout status deployment/devops-openshift
