@@ -1,4 +1,4 @@
-name: devops-openshift
+name: CI/CD to OpenShift
 
 on:
   push:
